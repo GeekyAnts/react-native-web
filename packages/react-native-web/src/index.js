@@ -30,7 +30,6 @@ import Vibration from './exports/Vibration';
 
 // components
 import ActivityIndicator from './exports/ActivityIndicator';
-import ART from './exports/ART';
 import Button from './exports/Button';
 import CheckBox from './exports/CheckBox';
 import FlatList from './exports/FlatList';
@@ -96,7 +95,6 @@ export {
   Vibration,
   // components
   ActivityIndicator,
-  ART,
   Button,
   CheckBox,
   FlatList,
@@ -162,7 +160,6 @@ const ReactNative = {
   Vibration,
   // components
   ActivityIndicator,
-  ART,
   Button,
   CheckBox,
   FlatList,
