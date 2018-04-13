@@ -61,7 +61,7 @@ import VirtualizedList from './exports/VirtualizedList';
 import ColorPropType from './exports/ColorPropType';
 import EdgeInsetsPropType from './exports/EdgeInsetsPropType';
 import PointPropType from './exports/PointPropType';
-
+import CombinedStyles from './exports/StyleSheet/stylesheets';
 export {
   // top-level API
   createElement,
@@ -124,7 +124,8 @@ export {
   // propTypes
   ColorPropType,
   EdgeInsetsPropType,
-  PointPropType
+  PointPropType,
+  CombinedStyles
 };
 
 const ReactNative = {
@@ -189,7 +190,8 @@ const ReactNative = {
   // propTypes
   ColorPropType,
   EdgeInsetsPropType,
-  PointPropType
+  PointPropType,
+  CombinedStyles
 };
 
 export default ReactNative;
