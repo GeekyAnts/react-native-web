@@ -8,7 +8,7 @@
  */
 
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import Stylesheets from './stylesheets';
+import Stylesheets from './Stylesheets';
 export default class WebStyleSheet {
   _cssRules = [];
   _sheet = null;
