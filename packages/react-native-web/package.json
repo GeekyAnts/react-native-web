@@ -1,14 +1,9 @@
 {
-  "name": "react-native-web",
-  "version": "0.4.0",
+  "name": "react-native-web-artless",
+  "version": "0.4.0-patch3",
   "description": "React Native for Web",
   "main": "dist/index.js",
-  "files": [
-    "dist",
-    "jest",
-    "src",
-    "!**/__tests__"
-  ],
+  "files": ["dist", "jest", "src", "!**/__tests__"],
   "dependencies": {
     "array-find-index": "^1.0.2",
     "create-react-class": "^15.6.2",
@@ -32,13 +27,6 @@
     "type": "git",
     "url": "git://github.com/necolas/react-native-web.git"
   },
-  "tags": [
-    "react"
-  ],
-  "keywords": [
-    "react",
-    "react-component",
-    "react-native",
-    "web"
-  ]
+  "tags": ["react"],
+  "keywords": ["react", "react-component", "react-native", "web"]
 }
