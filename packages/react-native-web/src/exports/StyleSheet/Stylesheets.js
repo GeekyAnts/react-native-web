@@ -1,7 +1,7 @@
-export default class StyleSheets {
+export default class CombinedStyles {
   static styleSheets = [];
 
   static getStyleSheets() {
-    return StyleSheets.styleSheets.join('\n');
+    return CombinedStyles.styleSheets.join('\n');
   }
 }
