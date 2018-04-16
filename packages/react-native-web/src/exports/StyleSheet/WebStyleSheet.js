@@ -8,7 +8,7 @@
  */
 
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import Stylesheets from './stylesheets';
+import CombinedStyles from './combinedStyles';
 export default class WebStyleSheet {
   _cssRules = [];
   _sheet = null;
@@ -46,7 +46,7 @@ export default class WebStyleSheet {
 
   insertRuleOnce(rule: string, position: ?number) {
     if (rule.indexOf('.rn-') === 0) {
-      Stylesheets.styleSheets.push(rule);
+      CombinedStyles.styleSheets.push(rule);
     }
     // Reduce chance of duplicate rules
     if (!this.containsRule(rule)) {

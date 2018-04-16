@@ -61,7 +61,7 @@ import VirtualizedList from './exports/VirtualizedList';
 import ColorPropType from './exports/ColorPropType';
 import EdgeInsetsPropType from './exports/EdgeInsetsPropType';
 import PointPropType from './exports/PointPropType';
-import CombinedStyles from './exports/StyleSheet/stylesheets';
+import CombinedStyles from './exports/StyleSheet/combinedStyles';
 export {
   // top-level API
   createElement,
