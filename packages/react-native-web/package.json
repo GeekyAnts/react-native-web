@@ -1,6 +1,6 @@
 {
   "name": "react-native-web-artless",
-  "version": "0.4.0-patch3",
+  "version": "0.4.0-patch6",
   "description": "React Native for Web",
   "main": "dist/index.js",
   "files": ["dist", "jest", "src", "!**/__tests__"],
