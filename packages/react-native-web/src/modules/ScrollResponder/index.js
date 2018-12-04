@@ -5,7 +5,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ScrollResponder
  * @flow
  */
 
@@ -411,6 +410,11 @@ const ScrollResponderMixin = {
       invariant('zoomToRect is not implemented');
     }
   },
+
+  /**
+   * Displays the scroll indicators momentarily.
+   */
+  scrollResponderFlashScrollIndicators: function() {},
 
   /**
    * This method should be used as the callback to onFocus in a TextInputs'

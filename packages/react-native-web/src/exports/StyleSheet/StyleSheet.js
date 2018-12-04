@@ -4,13 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule StyleSheet
  * @noflow
  */
 
-import flattenStyle from './flattenStyle';
-import getHairlineWidth from './getHairlineWidth';
+import StyleSheetValidation from './StyleSheetValidation';
 import ReactNativePropRegistry from '../../modules/ReactNativePropRegistry';
+import flattenStyle from './flattenStyle';
 
 const absoluteFillObject = {
   position: 'absolute',
@@ -35,7 +34,6 @@ const StyleSheet = {
     const result = {};
     Object.keys(styles).forEach(key => {
       if (process.env.NODE_ENV !== 'production') {
-        const StyleSheetValidation = require('./StyleSheetValidation').default;
         StyleSheetValidation.validateStyle(key, styles);
       }
       const id = styles[key] && ReactNativePropRegistry.register(styles[key]);
@@ -44,7 +42,7 @@ const StyleSheet = {
     return result;
   },
   flatten: flattenStyle,
-  hairlineWidth: getHairlineWidth()
+  hairlineWidth: 1
 };
 
 export default StyleSheet;

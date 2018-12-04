@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TransformPropTypes
  * @flow
  */
 
@@ -24,6 +23,8 @@ const TransformPropTypes = {
       shape({ scale: number }),
       shape({ scaleX: number }),
       shape({ scaleY: number }),
+      shape({ scaleZ: number }),
+      shape({ scale3d: string }),
       shape({ skewX: string }),
       shape({ skewY: string }),
       shape({ translateX: numberOrString }),

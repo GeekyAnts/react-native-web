@@ -60,44 +60,44 @@ describe('StyleSheet/createReactDOMStyle', () => {
     test('flex defaults', () => {
       expect(createReactDOMStyle({ display: 'flex' })).toEqual({
         display: 'flex',
-        flexShrink: '0 !important',
-        flexBasis: 'auto !important'
+        flexShrink: 0,
+        flexBasis: 'auto'
       });
     });
 
     test('flex: -1', () => {
       expect(createReactDOMStyle({ display: 'flex', flex: -1 })).toEqual({
         display: 'flex',
-        flexGrow: '0 !important',
-        flexShrink: '1 !important',
-        flexBasis: 'auto !important'
+        flexGrow: 0,
+        flexShrink: 1,
+        flexBasis: 'auto'
       });
     });
 
     test('flex: 0', () => {
       expect(createReactDOMStyle({ display: 'flex', flex: 0 })).toEqual({
         display: 'flex',
-        flexGrow: '0 !important',
-        flexShrink: '0 !important',
-        flexBasis: 'auto !important'
+        flexGrow: 0,
+        flexShrink: 0,
+        flexBasis: '0%'
       });
     });
 
     test('flex: 1', () => {
       expect(createReactDOMStyle({ display: 'flex', flex: 1 })).toEqual({
         display: 'flex',
-        flex: 1,
-        flexGrow: '1 !important',
-        flexShrink: '1 !important'
+        flexGrow: 1,
+        flexShrink: 1,
+        flexBasis: '0%'
       });
     });
 
     test('flex: 10', () => {
       expect(createReactDOMStyle({ display: 'flex', flex: 10 })).toEqual({
         display: 'flex',
-        flex: 10,
-        flexGrow: '10 !important',
-        flexShrink: '1 !important'
+        flexGrow: 10,
+        flexShrink: 1,
+        flexBasis: '0%'
       });
     });
 
@@ -105,17 +105,16 @@ describe('StyleSheet/createReactDOMStyle', () => {
       // is flex-basis applied?
       expect(createReactDOMStyle({ display: 'flex', flexBasis: '25%' })).toEqual({
         display: 'flex',
-        flexShrink: '0 !important',
-        flexBasis: '25% !important'
+        flexShrink: 0,
+        flexBasis: '25%'
       });
 
       // can flex-basis override the 'flex' expansion?
       expect(createReactDOMStyle({ display: 'flex', flex: 1, flexBasis: '25%' })).toEqual({
         display: 'flex',
-        flex: 1,
-        flexGrow: '1 !important',
-        flexShrink: '1 !important',
-        flexBasis: '25% !important'
+        flexGrow: 1,
+        flexShrink: 1,
+        flexBasis: '25%'
       });
     });
 
@@ -123,16 +122,16 @@ describe('StyleSheet/createReactDOMStyle', () => {
       // is flex-shrink applied?
       expect(createReactDOMStyle({ display: 'flex', flexShrink: 1 })).toEqual({
         display: 'flex',
-        flexShrink: '1 !important',
-        flexBasis: 'auto !important'
+        flexShrink: 1,
+        flexBasis: 'auto'
       });
 
       // can flex-shrink override the 'flex' expansion?
       expect(createReactDOMStyle({ display: 'flex', flex: 1, flexShrink: 2 })).toEqual({
         display: 'flex',
-        flex: 1,
-        flexGrow: '1 !important',
-        flexShrink: '2 !important'
+        flexGrow: 1,
+        flexShrink: 2,
+        flexBasis: '0%'
       });
     });
   });
@@ -167,22 +166,26 @@ describe('StyleSheet/createReactDOMStyle', () => {
       const resolved = createReactDOMStyle(style);
 
       expect(resolved).toEqual({
-        boxShadow: '0px 0px 0px red'
+        boxShadow: '0px 0px 0px rgba(255,0,0,1.00)'
       });
     });
 
     test('shadowColor and shadowOpacity only', () => {
       expect(createReactDOMStyle({ shadowColor: 'red', shadowOpacity: 0.5 })).toEqual({
-        boxShadow: '0px 0px 0px rgba(255,0,0,0.5)'
+        boxShadow: '0px 0px 0px rgba(255,0,0,0.50)'
       });
     });
 
     test('shadowOffset only', () => {
-      expect(createReactDOMStyle({ shadowOffset: { width: 1, height: 2 } })).toEqual({});
+      expect(createReactDOMStyle({ shadowOffset: { width: 1, height: 2 } })).toEqual({
+        boxShadow: '1px 2px 0px rgba(0,0,0,1.00)'
+      });
     });
 
     test('shadowRadius only', () => {
-      expect(createReactDOMStyle({ shadowRadius: 5 })).toEqual({});
+      expect(createReactDOMStyle({ shadowRadius: 5 })).toEqual({
+        boxShadow: '0px 0px 5px rgba(0,0,0,1.00)'
+      });
     });
 
     test('shadowOffset, shadowRadius, shadowColor', () => {
@@ -209,15 +212,91 @@ describe('StyleSheet/createReactDOMStyle', () => {
     });
   });
 
-  test('textShadowOffset', () => {
-    expect(
-      createReactDOMStyle({
-        textShadowColor: 'red',
-        textShadowOffset: { width: 1, height: 2 },
-        textShadowRadius: 5
-      })
-    ).toEqual({
-      textShadow: '1px 2px 5px red'
+  describe('textDecoration styles', () => {
+    test('textDecorationColor only', () => {
+      expect(
+        createReactDOMStyle({
+          textDecorationColor: 'red'
+        })
+      ).toEqual({});
+    });
+
+    test('textDecorationLine only', () => {
+      expect(
+        createReactDOMStyle({
+          textDecorationLine: 'underline'
+        })
+      ).toEqual({
+        textDecoration: 'underline'
+      });
+    });
+
+    test('textDecorationStyle only', () => {
+      expect(
+        createReactDOMStyle({
+          textDecorationStyle: 'dashed'
+        })
+      ).toEqual({});
+    });
+
+    test('textDecorationColor, textDecorationLine, textDecorationStyle', () => {
+      expect(
+        createReactDOMStyle({
+          textDecorationColor: 'red',
+          textDecorationLine: 'underline',
+          textDecorationStyle: 'dashed'
+        })
+      ).toEqual({
+        textDecoration: 'underline',
+        textDecorationColor: 'rgba(255,0,0,1.00)',
+        textDecorationStyle: 'dashed'
+      });
+    });
+  });
+
+  describe('textShadow styles', () => {
+    test('textShadowColor only', () => {
+      expect(createReactDOMStyle({ textShadowColor: 'red' })).toEqual({});
+    });
+
+    test('textShadowOffset only', () => {
+      expect(createReactDOMStyle({ textShadowOffset: { width: 1, height: 2 } })).toEqual({});
+    });
+
+    test('textShadowRadius only', () => {
+      expect(createReactDOMStyle({ textShadowRadius: 5 })).toEqual({});
+    });
+
+    test('textShadowColor and textShadowOffset only', () => {
+      expect(
+        createReactDOMStyle({ textShadowColor: 'red', textShadowOffset: { width: 0, height: 0 } })
+      ).toEqual({});
+      expect(
+        createReactDOMStyle({ textShadowColor: 'red', textShadowOffset: { width: -1, height: 0 } })
+      ).toEqual({
+        textShadow: '-1px 0px 0px rgba(255,0,0,1.00)'
+      });
+      expect(
+        createReactDOMStyle({ textShadowColor: 'red', textShadowOffset: { width: 1, height: 2 } })
+      ).toEqual({
+        textShadow: '1px 2px 0px rgba(255,0,0,1.00)'
+      });
+    });
+
+    test('textShadowColor and textShadowRadius only', () => {
+      expect(createReactDOMStyle({ textShadowColor: 'red', textShadowRadius: 5 })).toEqual({});
+    });
+
+    test('textShadowColor, textShadowOffset, textShadowRadius', () => {
+      expect(
+        createReactDOMStyle({
+          textShadowColor: 'rgba(50,60,70,0.50)',
+          textShadowOffset: { width: 5, height: 10 },
+          textShadowRadius: 15
+        })
+      ).toEqual({
+        textShadow: '5px 10px 15px rgba(50,60,70,0.50)'
+      });
     });
   });
 

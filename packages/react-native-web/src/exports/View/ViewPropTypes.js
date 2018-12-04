@@ -5,7 +5,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ViewPropTypes
  * @flow
  */
 
@@ -39,6 +38,7 @@ export type ViewProps = {
   children?: any,
   hitSlop?: EdgeInsetsProp,
   importantForAccessibility?: 'auto' | 'yes' | 'no' | 'no-hide-descendants',
+  nativeID?: string,
   onBlur?: Function,
   onClick?: Function,
   onClickCapture?: Function,
@@ -88,6 +88,7 @@ const ViewPropTypes = {
   children: any,
   hitSlop: EdgeInsetsPropType,
   importantForAccessibility: oneOf(['auto', 'no', 'no-hide-descendants', 'yes']),
+  nativeID: string,
   onBlur: func,
   onClick: func,
   onClickCapture: func,

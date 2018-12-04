@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Switch
  * @flow
  */
 
@@ -68,6 +67,7 @@ class Switch extends Component<*> {
 
   render() {
     const {
+      accessibilityLabel,
       activeThumbColor,
       activeTrackColor,
       disabled,
@@ -116,6 +116,7 @@ class Switch extends Component<*> {
     ];
 
     const nativeControl = createElement('input', {
+      accessibilityLabel,
       checked: value,
       disabled: disabled,
       onBlur: this._handleFocusState,

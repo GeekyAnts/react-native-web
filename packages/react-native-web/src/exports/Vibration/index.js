@@ -5,7 +5,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Vibration
  * @flow
  */
 
@@ -13,11 +12,7 @@ type VibratePattern = number | Array<number>;
 
 const vibrate = (pattern: VibratePattern) => {
   if ('vibrate' in window.navigator) {
-    if (typeof pattern === 'number' || Array.isArray(pattern)) {
-      window.navigator.vibrate(pattern);
-    } else {
-      throw new Error('Vibration pattern should be a number or array');
-    }
+    window.navigator.vibrate(pattern);
   }
 };
 
@@ -25,7 +20,7 @@ const Vibration = {
   cancel() {
     vibrate(0);
   },
-  vibrate(pattern: VibratePattern) {
+  vibrate(pattern: VibratePattern = 400) {
     vibrate(pattern);
   }
 };

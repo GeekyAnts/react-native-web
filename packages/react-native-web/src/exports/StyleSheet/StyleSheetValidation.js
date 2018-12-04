@@ -5,7 +5,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule StyleSheetValidation
  * @flow
  */
 
@@ -22,7 +21,7 @@ import { number, oneOf, string } from 'prop-types';
 // plz don't fire me.
 const ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
-export default class StyleSheetValidation {
+class StyleSheetValidation {
   static validateStyleProp(prop: string, style: Object, caller: string) {
     if (process.env.NODE_ENV !== 'production') {
       const value = style[prop];
@@ -101,8 +100,13 @@ StyleSheetValidation.addValidStylePropTypes({
   fill: string,
   float: oneOf(['end', 'left', 'none', 'right', 'start']),
   listStyle: string,
+  objectFit: oneOf(['fill', 'contain', 'cover', 'none', 'scale-down']),
+  objectPosition: string,
   pointerEvents: string,
   tableLayout: string,
   /* @private */
-  MozAppearance: string
+  MozAppearance: string,
+  WebkitAppearance: string
 });
+
+export default StyleSheetValidation;

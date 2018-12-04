@@ -7,8 +7,9 @@
  * @noflow
  */
 
+import normalizeColor from '../../modules/normalizeColor';
 import normalizeValue from './normalizeValue';
-import processColor from '../processColor';
+import resolveShadowValue from './resolveShadowValue';
 
 /**
  * The browser implements the CSS cascade, where the order of properties is a
@@ -40,7 +41,6 @@ const styleShortFormProperties = {
   padding: ['paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'],
   paddingHorizontal: ['paddingRight', 'paddingLeft'],
   paddingVertical: ['paddingTop', 'paddingBottom'],
-  textDecorationLine: ['textDecoration'],
   writingDirection: ['direction']
 };
 
@@ -83,19 +83,30 @@ const defaultOffset = { height: 0, width: 0 };
  * Shadow
  */
 
-// TODO: add inset and spread support
 const resolveShadow = (resolvedStyle, style) => {
-  const { height, width } = style.shadowOffset || defaultOffset;
-  const offsetX = normalizeValue(null, width);
-  const offsetY = normalizeValue(null, height);
-  const blurRadius = normalizeValue(null, style.shadowRadius || 0);
-  const color = processColor(style.shadowColor, style.shadowOpacity);
+  const { boxShadow } = style;
+  const shadow = resolveShadowValue(style);
+  resolvedStyle.boxShadow = boxShadow ? `${boxShadow}, ${shadow}` : shadow;
+};
 
-  if (color) {
-    const boxShadow = `${offsetX} ${offsetY} ${blurRadius} ${color}`;
-    resolvedStyle.boxShadow = style.boxShadow ? `${style.boxShadow}, ${boxShadow}` : boxShadow;
-  } else if (style.boxShadow) {
-    resolvedStyle.boxShadow = style.boxShadow;
+/**
+ * Text Decoration
+ */
+
+const resolveTextDecoration = (resolvedStyle, style) => {
+  const { textDecorationColor, textDecorationLine, textDecorationStyle } = style;
+  const color = normalizeColor(textDecorationColor);
+
+  if (textDecorationLine) {
+    // use 'text-decoration' for browsers that support CSS2 text-decoration (e.g., IE, Edge)
+    resolvedStyle.textDecoration = textDecorationLine;
+
+    if (textDecorationColor) {
+      resolvedStyle.textDecorationColor = color;
+    }
+    if (textDecorationStyle) {
+      resolvedStyle.textDecorationStyle = textDecorationStyle;
+    }
   }
 };
 
@@ -104,13 +115,14 @@ const resolveShadow = (resolvedStyle, style) => {
  */
 
 const resolveTextShadow = (resolvedStyle, style) => {
-  const { height, width } = style.textShadowOffset || defaultOffset;
+  const { textShadowColor, textShadowOffset, textShadowRadius } = style;
+  const { height, width } = textShadowOffset || defaultOffset;
   const offsetX = normalizeValue(null, width);
   const offsetY = normalizeValue(null, height);
-  const blurRadius = normalizeValue(null, style.textShadowRadius || 0);
-  const color = processColor(style.textShadowColor);
+  const blurRadius = normalizeValue(null, textShadowRadius || 0);
+  const color = normalizeColor(textShadowColor);
 
-  if (color) {
+  if (color && (height !== 0 || width !== 0)) {
     resolvedStyle.textShadow = `${offsetX} ${offsetY} ${blurRadius} ${color}`;
   }
 };
@@ -149,6 +161,7 @@ const resolveTransform = (resolvedStyle, style) => {
 
 const createReducer = (style, styleProps) => {
   let hasResolvedShadow = false;
+  let hasResolvedTextDecoration = false;
   let hasResolvedTextShadow = false;
 
   return (resolvedStyle, prop) => {
@@ -162,7 +175,7 @@ const createReducer = (style, styleProps) => {
 
     // Normalize color values
     if (colorProps[prop]) {
-      value = processColor(value);
+      value = normalizeColor(value);
     }
 
     // Ignore everything else with a null value
@@ -180,16 +193,26 @@ const createReducer = (style, styleProps) => {
         break;
       }
 
+      // TODO: remove once this issue is fixed
+      // https://github.com/rofrischmann/inline-style-prefixer/issues/159
+      case 'backgroundClip': {
+        if (value === 'text') {
+          resolvedStyle.backgroundClip = value;
+          resolvedStyle.WebkitBackgroundClip = value;
+        }
+        break;
+      }
+
       case 'display': {
         resolvedStyle.display = value;
         // A flex container in React Native has these defaults which should be
         // set only if there is no otherwise supplied flex style.
         if (style.display === 'flex' && style.flex == null) {
           if (style.flexShrink == null) {
-            resolvedStyle.flexShrink = '0 !important';
+            resolvedStyle.flexShrink = 0;
           }
           if (style.flexBasis == null) {
-            resolvedStyle.flexBasis = 'auto !important';
+            resolvedStyle.flexBasis = 'auto';
           }
         }
         break;
@@ -197,41 +220,19 @@ const createReducer = (style, styleProps) => {
 
       // The 'flex' property value in React Native must be a positive integer,
       // 0, or -1.
-      //
-      // On the web, a positive integer value for 'flex' is complicated by
-      // browser differences. Although browsers render styles like 'flex:2'
-      // consistently, they don't all set the same value for the resulting
-      // 'flexBasis' (See #616). Expanding 'flex' in 'StyleSheet' would mean
-      // setting different values for different browsers.
-      //
-      // This fix instead relies on the browser expanding 'flex' itself. And
-      // because the 'flex' style is not being expanded the generated CSS is
-      // likely to contain source order "conflicts". To avoid the browser
-      // relying on source order to resolve the styles, all the longhand flex
-      // property values must use '!important'.
       case 'flex': {
         if (value > 0) {
-          resolvedStyle.flex = value;
-          resolvedStyle.flexGrow = `${value} !important`;
-          resolvedStyle.flexShrink = '1 !important';
+          resolvedStyle.flexGrow = value;
+          resolvedStyle.flexShrink = 1;
+          resolvedStyle.flexBasis = '0%';
         } else if (value === 0) {
-          resolvedStyle.flexGrow = '0 !important';
-          resolvedStyle.flexShrink = '0 !important';
-          resolvedStyle.flexBasis = 'auto !important';
+          resolvedStyle.flexGrow = 0;
+          resolvedStyle.flexShrink = 0;
+          resolvedStyle.flexBasis = '0%';
         } else if (value === -1) {
-          resolvedStyle.flexGrow = '0 !important';
-          resolvedStyle.flexShrink = '1 !important';
-          resolvedStyle.flexBasis = 'auto !important';
-        }
-        break;
-      }
-
-      case 'flexGrow':
-      case 'flexShrink':
-      case 'flexBasis': {
-        if (value != null) {
-          const hasImportant = `${value}`.indexOf('!important') > -1;
-          resolvedStyle[prop] = hasImportant ? value : `${value} !important`;
+          resolvedStyle.flexGrow = 0;
+          resolvedStyle.flexShrink = 1;
+          resolvedStyle.flexBasis = 'auto';
         }
         break;
       }
@@ -269,6 +270,16 @@ const createReducer = (style, styleProps) => {
 
       case 'textAlignVertical': {
         resolvedStyle.verticalAlign = value === 'center' ? 'middle' : value;
+        break;
+      }
+
+      case 'textDecorationColor':
+      case 'textDecorationLine':
+      case 'textDecorationStyle': {
+        if (!hasResolvedTextDecoration) {
+          resolveTextDecoration(resolvedStyle, style);
+        }
+        hasResolvedTextDecoration = true;
         break;
       }
 

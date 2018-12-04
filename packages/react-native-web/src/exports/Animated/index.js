@@ -4,11 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Animated
  * @flow
  */
 
-import AnimatedImplementation from '../../vendor/Animated/AnimatedImplementation';
+import AnimatedImplementation from '../../vendor/react-native/Animated/AnimatedImplementation';
 import Image from '../Image';
 import ScrollView from '../ScrollView';
 import Text from '../Text';

@@ -5,11 +5,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule InteractionManager
  * @flow
  */
 
 import invariant from 'fbjs/lib/invariant';
+import requestIdleCallback, { cancelIdleCallback } from '../../modules/requestIdleCallback';
 
 const InteractionManager = {
   Events: {
@@ -21,16 +21,21 @@ const InteractionManager = {
    * Schedule a function to run after all interactions have completed.
    */
   runAfterInteractions(task: ?Function): { then: Function, done: Function, cancel: Function } {
-    console.warn('InteractionManager is not supported on web');
+    let handle;
+
     const promise = new Promise(resolve => {
-      if (task) {
-        resolve(task());
-      }
+      handle = requestIdleCallback(() => {
+        if (task) {
+          resolve(task());
+        }
+      });
     });
     return {
       then: promise.then.bind(promise),
-      done: () => {},
-      cancel: () => {}
+      done: promise.then.bind(promise),
+      cancel: () => {
+        cancelIdleCallback(handle);
+      }
     };
   },
 

@@ -5,7 +5,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TextPropTypes
  * @flow
  */
 
@@ -22,6 +21,7 @@ const TextPropTypes = {
   accessible: bool,
   children: any,
   importantForAccessibility: oneOf(['auto', 'no', 'no-hide-descendants', 'yes']),
+  nativeID: string,
   numberOfLines: number,
   onBlur: func,
   onContextMenu: func,

@@ -5,9 +5,12 @@ import Image from '../';
 import ImageLoader from '../../../modules/ImageLoader';
 import ImageUriCache from '../ImageUriCache';
 import React from 'react';
+import StyleSheet from '../../StyleSheet';
 import { mount, shallow } from 'enzyme';
 
 const originalImage = window.Image;
+
+const findImageSurfaceStyle = wrapper => StyleSheet.flatten(wrapper.childAt(0).prop('style'));
 
 describe('components/Image', () => {
   beforeEach(() => {
@@ -33,18 +36,24 @@ describe('components/Image', () => {
     expect(component.prop('accessible')).toBe(false);
   });
 
+  test('prop "blurRadius"', () => {
+    const defaultSource = { uri: 'https://google.com/favicon.ico' };
+    const component = shallow(<Image blurRadius={5} defaultSource={defaultSource} />);
+    expect(findImageSurfaceStyle(component).filter).toMatchSnapshot();
+  });
+
   describe('prop "defaultSource"', () => {
     test('sets background image when value is an object', () => {
       const defaultSource = { uri: 'https://google.com/favicon.ico' };
       const component = shallow(<Image defaultSource={defaultSource} />);
-      expect(component.prop('style').backgroundImage).toMatchSnapshot();
+      expect(findImageSurfaceStyle(component).backgroundImage).toMatchSnapshot();
     });
 
     test('sets background image when value is a string', () => {
       // emulate require-ed asset
       const defaultSource = 'https://google.com/favicon.ico';
       const component = shallow(<Image defaultSource={defaultSource} />);
-      expect(component.prop('style').backgroundImage).toMatchSnapshot();
+      expect(findImageSurfaceStyle(component).backgroundImage).toMatchSnapshot();
     });
 
     test('sets "height" and "width" styles if missing', () => {
@@ -54,7 +63,7 @@ describe('components/Image', () => {
         width: 20
       };
       const component = shallow(<Image defaultSource={defaultSource} />);
-      const { height, width } = component.prop('style');
+      const { height, width } = StyleSheet.flatten(component.prop('style'));
       expect(height).toBe(10);
       expect(width).toBe(20);
     });
@@ -68,7 +77,7 @@ describe('components/Image', () => {
       const component = shallow(
         <Image defaultSource={defaultSource} style={{ height: 20, width: 40 }} />
       );
-      const { height, width } = component.prop('style');
+      const { height, width } = StyleSheet.flatten(component.prop('style'));
       expect(height).toBe(20);
       expect(width).toBe(40);
     });
@@ -77,9 +86,9 @@ describe('components/Image', () => {
   test('prop "draggable"', () => {
     const defaultSource = { uri: 'https://google.com/favicon.ico' };
     const component = shallow(<Image defaultSource={defaultSource} />);
-    expect(component.find('img').prop('draggable')).toBeUndefined();
-    component.setProps({ defaultSource, draggable: false });
     expect(component.find('img').prop('draggable')).toBe(false);
+    component.setProps({ defaultSource, draggable: true });
+    expect(component.find('img').prop('draggable')).toBe(true);
   });
 
   describe('prop "onLoad"', () => {
@@ -141,12 +150,19 @@ describe('components/Image', () => {
     ].forEach(resizeMode => {
       test(`value "${resizeMode}"`, () => {
         const component = shallow(<Image resizeMode={resizeMode} />);
-        expect(component.prop('style').backgroundSize).toMatchSnapshot();
+        expect(findImageSurfaceStyle(component).backgroundSize).toMatchSnapshot();
       });
     });
   });
 
   describe('prop "source"', () => {
+    test('does not throw', () => {
+      const sources = [null, '', {}, { uri: '' }, { uri: 'https://google.com' }];
+      sources.forEach(source => {
+        expect(() => shallow(<Image source={source} />)).not.toThrow();
+      });
+    });
+
     test('is not set immediately if the image has not already been loaded', () => {
       const uri = 'https://google.com/favicon.ico';
       const source = { uri };
@@ -197,9 +213,27 @@ describe('components/Image', () => {
   });
 
   describe('prop "style"', () => {
-    test('correctly supports "resizeMode" property', () => {
+    test('supports "resizeMode" property', () => {
       const component = shallow(<Image style={{ resizeMode: Image.resizeMode.contain }} />);
-      expect(component.prop('style').backgroundSize).toMatchSnapshot();
+      expect(findImageSurfaceStyle(component).backgroundSize).toMatchSnapshot();
+    });
+
+    test('supports "shadow" properties (convert to filter)', () => {
+      const component = shallow(
+        <Image style={{ shadowColor: 'red', shadowOffset: { width: 1, height: 1 } }} />
+      );
+      expect(findImageSurfaceStyle(component).filter).toMatchSnapshot();
+    });
+
+    test('supports "tintcolor" property (convert to filter)', () => {
+      const defaultSource = { uri: 'https://google.com/favicon.ico' };
+      const component = shallow(
+        <Image defaultSource={defaultSource} style={{ tintColor: 'red' }} />
+      );
+      // filter
+      expect(findImageSurfaceStyle(component).filter).toContain('url(#tint-');
+      // svg
+      expect(component.childAt(2).type()).toBe('svg');
     });
 
     test('removes other unsupported View styles', () => {

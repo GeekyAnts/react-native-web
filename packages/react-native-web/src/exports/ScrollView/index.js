@@ -5,7 +5,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ScrollView
  * @noflow
  */
 
@@ -19,7 +18,7 @@ import StyleSheet from '../StyleSheet';
 import View from '../View';
 import ViewPropTypes from '../ViewPropTypes';
 import React from 'react';
-import { bool, element, func, number, oneOf } from 'prop-types';
+import { arrayOf, bool, element, func, number, oneOf } from 'prop-types';
 
 const emptyObject = {};
 
@@ -36,6 +35,7 @@ const ScrollView = createReactClass({
     refreshControl: element,
     scrollEnabled: bool,
     scrollEventThrottle: number,
+    stickyHeaderIndices: arrayOf(number),
     style: ViewPropTypes.style
   },
 
@@ -43,6 +43,10 @@ const ScrollView = createReactClass({
 
   getInitialState() {
     return this.scrollResponderMixinGetInitialState();
+  },
+
+  flashScrollIndicators() {
+    this.scrollResponderFlashScrollIndicators();
   },
 
   setNativeProps(props: Object) {
@@ -132,11 +136,11 @@ const ScrollView = createReactClass({
       horizontal,
       onContentSizeChange,
       refreshControl,
+      stickyHeaderIndices,
       /* eslint-disable */
       keyboardDismissMode,
       onScroll,
       pagingEnabled,
-      stickyHeaderIndices,
       /* eslint-enable */
       ...other
     } = this.props;
@@ -160,19 +164,32 @@ const ScrollView = createReactClass({
       };
     }
 
+    const children =
+      !horizontal && Array.isArray(stickyHeaderIndices)
+        ? React.Children.map(this.props.children, (child, i) => {
+            if (child && stickyHeaderIndices.indexOf(i) > -1) {
+              return <View style={styles.stickyHeader}>{child}</View>;
+            } else {
+              return child;
+            }
+          })
+        : this.props.children;
+
     const contentContainer = (
       <View
         {...contentSizeChangeProps}
-        children={this.props.children}
+        children={children}
         collapsable={false}
         ref={this._setInnerViewRef}
         style={[horizontal && styles.contentContainerHorizontal, contentContainerStyle]}
       />
     );
 
+    const baseStyle = horizontal ? styles.baseHorizontal : styles.baseVertical;
+
     const props = {
       ...other,
-      style: [styles.base, horizontal && styles.baseHorizontal, this.props.style],
+      style: [baseStyle, this.props.style],
       onTouchStart: this.scrollResponderHandleTouchStart,
       onTouchMove: this.scrollResponderHandleTouchMove,
       onTouchEnd: this.scrollResponderHandleTouchEnd,
@@ -199,7 +216,7 @@ const ScrollView = createReactClass({
       return React.cloneElement(
         refreshControl,
         { style: props.style },
-        <ScrollViewClass {...props} ref={this._setScrollViewRef} style={styles.base}>
+        <ScrollViewClass {...props} ref={this._setScrollViewRef} style={baseStyle}>
           {contentContainer}
         </ScrollViewClass>
       );
@@ -246,24 +263,37 @@ const ScrollView = createReactClass({
   }
 });
 
+const commonStyle = {
+  flexGrow: 1,
+  flexShrink: 1,
+  // Enable hardware compositing in modern browsers.
+  // Creates a new layer with its own backing surface that can significantly
+  // improve scroll performance.
+  transform: [{ translateZ: 0 }],
+  // iOS native scrolling
+  WebkitOverflowScrolling: 'touch'
+};
+
 const styles = StyleSheet.create({
-  base: {
-    flex: 1,
+  baseVertical: {
+    ...commonStyle,
+    flexDirection: 'column',
     overflowX: 'hidden',
-    overflowY: 'auto',
-    WebkitOverflowScrolling: 'touch',
-    // Enable hardware compositing in modern browsers.
-    // Creates a new layer with its own backing surface that can significantly
-    // improve scroll performance.
-    transform: [{ translateZ: 0 }]
+    overflowY: 'auto'
   },
   baseHorizontal: {
+    ...commonStyle,
     flexDirection: 'row',
     overflowX: 'auto',
     overflowY: 'hidden'
   },
   contentContainerHorizontal: {
     flexDirection: 'row'
+  },
+  stickyHeader: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 10
   }
 });
 

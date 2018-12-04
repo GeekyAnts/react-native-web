@@ -5,7 +5,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Text
  * @flow
  */
 
@@ -62,7 +61,7 @@ class Text extends Component<*> {
 
     if (onPress) {
       otherProps.accessible = true;
-      otherProps.onClick = onPress;
+      otherProps.onClick = this._createPressHandler(onPress);
       otherProps.onKeyDown = this._createEnterHandler(onPress);
     }
 
@@ -87,6 +86,13 @@ class Text extends Component<*> {
       if (e.keyCode === 13) {
         fn && fn(e);
       }
+    };
+  }
+
+  _createPressHandler(fn) {
+    return e => {
+      e.stopPropagation();
+      fn && fn(e);
     };
   }
 }
