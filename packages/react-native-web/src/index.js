@@ -107,6 +107,7 @@ const TimePickerAndroid = emptyObject;
 const TVEventHandler = emptyObject;
 const VibrationIOS = emptyObject;
 
+import CombinedStyles from './exports/StyleSheet/combinedStyles';
 export {
   // top-level API
   createElement,
@@ -210,7 +211,8 @@ export {
   Systrace,
   TimePickerAndroid,
   TVEventHandler,
-  VibrationIOS
+  VibrationIOS,
+  CombinedStyles
 };
 
 const ReactNative = {
@@ -316,7 +318,8 @@ const ReactNative = {
   Systrace,
   TimePickerAndroid,
   TVEventHandler,
-  VibrationIOS
+  VibrationIOS,
+  CombinedStyles
 };
 
 export default ReactNative;

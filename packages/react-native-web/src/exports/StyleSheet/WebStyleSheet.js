@@ -10,6 +10,7 @@
 import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import modality from './modality';
 
+import CombinedStyles from './combinedStyles';
 export default class WebStyleSheet {
   _cssRules = [];
   _sheet = null;
@@ -47,10 +48,12 @@ export default class WebStyleSheet {
   }
 
   insertRuleOnce(rule: string, position: ?number) {
+    if (rule.indexOf('.rn-') === 0) {
+      CombinedStyles.styleSheets.push(rule);
+    }
     // Reduce chance of duplicate rules
     if (!this.containsRule(rule)) {
       this._cssRules.push(rule);
-
       // Check whether a rule was part of any prerendered styles (textContent
       // doesn't include styles injected via 'insertRule')
       if (this._textContent.indexOf(rule) === -1 && this._sheet) {
