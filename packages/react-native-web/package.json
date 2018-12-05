@@ -1,6 +1,6 @@
 {
-"name": "react-native-web-artless",
-"version": "0.9.8-patch1",
+  "name": "react-native-web-artless",
+  "version": "0.9.8-patch3",
   "description": "React Native for Web",
   "module": "dist/index.js",
   "main": "dist/cjs/index.js",
@@ -35,6 +35,13 @@
     "type": "git",
     "url": "git://github.com/necolas/react-native-web.git"
   },
-  "tags": ["react"],
-  "keywords": ["react", "react-component", "react-native", "web"]
+  "tags": [
+    "react"
+  ],
+  "keywords": [
+    "react",
+    "react-component",
+    "react-native",
+    "web"
+  ]
 }
